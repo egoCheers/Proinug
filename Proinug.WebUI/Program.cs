@@ -1,10 +1,19 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
+using Proinug.WebUI.Extensions;
+using Proinug.WebUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddAuthService(builder.Configuration)
+    .AddScoped<ProtectedLocalStorage>()
+    .AddScoped<AuthenticationStateProvider, CwAuthenticationStateProvider>()
+    .AddSingleton<ISystemClock, RealSystemClock>();
 
 var app = builder.Build();
 
