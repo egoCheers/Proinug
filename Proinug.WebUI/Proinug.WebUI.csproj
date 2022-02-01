@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="HigLabo.Core" Version="6.1.0" />
+      <PackageReference Include="HigLabo.Mapper" Version="6.2.0" />
     </ItemGroup>
 
 </Project>
