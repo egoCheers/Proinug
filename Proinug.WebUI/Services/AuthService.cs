@@ -56,8 +56,22 @@ public class AuthService: IAuthService
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
-    public Task<(int Error, TokenDto? Token)> RefreshToken(TokenDto token)
+    public async Task<(int Error, TokenDto? Token)> RefreshToken(TokenDto token)
     {
-        throw new NotImplementedException();
+        var uri = $"{API}/{REFRESH_ENDPOINT}{token.RefreshTokenId}";
+
+        try
+        {
+            var response = await _client.SendAsJson(HttpMethod.Post, null, uri, token.Jwt);
+
+            if (response.StatusCode != HttpStatusCode.OK) return ((int) response.StatusCode, null);
+            var tokenDto = await response.Content.ReadAs<TokenDto>();
+            return (0, tokenDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while refresh token");
+            return (1000, null);
+        }
     }
 }
