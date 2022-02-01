@@ -1,7 +1,10 @@
 ﻿using System.Linq;
 using Bunit;
 using Bunit.TestDoubles;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using Proinug.WebUI.Components;
+using Proinug.WebUI.Services;
 using Xunit;
 
 namespace Proinug.Tests;
@@ -45,7 +48,7 @@ public class LoginFormTest
     public void LoginForm_SubmitButtonHaveSpinnerSpanAfterClicking()
     {
         using var ctx = new TestContext();
-        ctx.AddTestAuthorization();
+        // Ok here should do some mocking
         
         var component = ctx.RenderComponent<LoginForm>();
         var buttonSubmit = component.Find("#button-submit");
