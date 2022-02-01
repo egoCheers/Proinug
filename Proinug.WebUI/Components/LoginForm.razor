@@ -1,5 +1,20 @@
 ﻿@using Proinug.WebUI.ViewModels
 
+@if (_errorCode > 0)
+{
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <span class="oi oi-warning flex-shrink-0 me-3 ms-1 fs-3" role="img" aria-label="Danger:"></span>
+        <div>
+            <div>
+                @_errorMessage
+            </div>
+            <div>
+                Error: @_errorCode
+            </div>
+        </div>
+    </div>
+}
+
 <EditForm Model="@_credentials" OnValidSubmit="LoginAsync">
     <DataAnnotationsValidator/>
     <div class="mb-3">
@@ -14,23 +29,11 @@
                    @bind-Value="_credentials.Password"/>
         <ValidationMessage For="@(() => _credentials.Password)"/>
     </div>
-    <button type="submit" class="btn btn-primary mt-2" disabled="@_loginIn" id="button-submit">
-        @if (_loginIn)
+    <button type="submit" class="btn btn-primary mt-2" disabled="@_busy" id="button-submit">
+        @if (_busy)
         {
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         }
         Login
     </button>
 </EditForm>
-
-@code {
-    private CredentialsVm _credentials = new();
-    private bool _loginIn;
-
-    private async Task LoginAsync()
-    {
-        _loginIn = true;
-        await Task.Delay(2000);
-        _loginIn = false;
-    }
-}
