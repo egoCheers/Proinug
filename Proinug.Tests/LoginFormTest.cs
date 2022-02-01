@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Bunit;
+using Bunit.TestDoubles;
 using Proinug.WebUI.Components;
 using Xunit;
 
@@ -44,6 +45,7 @@ public class LoginFormTest
     public void LoginForm_SubmitButtonHaveSpinnerSpanAfterClicking()
     {
         using var ctx = new TestContext();
+        ctx.AddTestAuthorization();
         
         var component = ctx.RenderComponent<LoginForm>();
         var buttonSubmit = component.Find("#button-submit");
