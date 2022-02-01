@@ -9,9 +9,7 @@ namespace Proinug.Tests;
 public class LoginFormTest
 {
     public LoginFormTest()
-    {
-        ;
-    }
+    { }
     
     [Fact]
     public void LoginForm_ContainsUsernamePasswordSubmitInputs()
