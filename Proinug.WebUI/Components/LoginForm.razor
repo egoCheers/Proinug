@@ -1,21 +1,36 @@
 ﻿@using Proinug.WebUI.ViewModels
 
-<EditForm Model="@credentials">
+<EditForm Model="@_credentials" OnValidSubmit="LoginAsync">
     <DataAnnotationsValidator/>
     <div class="mb-3">
-        <label for="input-login" class="form-label">Login</label>
-        <InputText type="email" class="form-control" id="input-login" 
-                   @bind-Value="credentials.Username"/>
+        <label for="input-login" class="form-label">Username</label>
+        <InputText type="text" class="form-control" id="input-login" 
+                   @bind-Value="_credentials.Username"/>
+        <ValidationMessage For="@(() => _credentials.Username)"/>
     </div>
     <div class="mb-3">
         <label for="input-password" class="form-label">Password</label>
         <InputText type="password" class="form-control" id="input-password" 
-                   @bind-Value="credentials.Password"/>
+                   @bind-Value="_credentials.Password"/>
+        <ValidationMessage For="@(() => _credentials.Password)"/>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary mt-2" disabled="@_loginIn" id="button-submit">
+        @if (_loginIn)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }
+        Login
+    </button>
 </EditForm>
 
-
 @code {
-    private CredentialsVM credentials = new();
+    private CredentialsVm _credentials = new();
+    private bool _loginIn;
+
+    private async Task LoginAsync()
+    {
+        _loginIn = true;
+        await Task.Delay(2000);
+        _loginIn = false;
+    }
 }
