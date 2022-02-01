@@ -10,7 +10,7 @@ public class LoginFormTest
 {
     public LoginFormTest()
     {
-        ;
+        
     }
     
     [Fact]
