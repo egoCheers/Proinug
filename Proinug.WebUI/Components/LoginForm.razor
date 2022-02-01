@@ -1,0 +1,21 @@
+﻿@using Proinug.WebUI.ViewModels
+
+<EditForm Model="@credentials">
+    <DataAnnotationsValidator/>
+    <div class="mb-3">
+        <label for="input-login" class="form-label">Login</label>
+        <InputText type="email" class="form-control" id="input-login" 
+                   @bind-Value="credentials.Username"/>
+    </div>
+    <div class="mb-3">
+        <label for="input-password" class="form-label">Password</label>
+        <InputText type="password" class="form-control" id="input-password" 
+                   @bind-Value="credentials.Password"/>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+
+@code {
+    private CredentialsVM credentials = new();
+}
