@@ -1,4 +1,6 @@
-﻿using Proinug.WebUI.Dto;
+﻿using System.Net;
+using Proinug.WebUI.Dto;
+using Proinug.WebUI.Extensions;
 using Proinug.WebUI.Interfaces;
 using Proinug.WebUI.Models;
 
@@ -9,6 +11,10 @@ namespace Proinug.WebUI.Services;
 /// </summary>
 public class AuthService: IAuthService
 {
+    private const string API = "api";
+    private const string LOGIN_ENDPOINT = "Token/signin";
+    private const string REFRESH_ENDPOINT = "Token/refreshId=";
+    
     private readonly HttpClient _client;
     private readonly ILogger<AuthService> _logger;
 
@@ -22,9 +28,27 @@ public class AuthService: IAuthService
     /// </summary>
     /// <param name="credentials"></param>
     /// <returns></returns>
-    public Task<(int Error, TokenDto? Token)> LoginAsync(Credentials credentials)
+    public async Task<(int Error, TokenDto? Token)> LoginAsync(Credentials credentials)
     {
-        throw new NotImplementedException();
+        var uri = $"{API}/{LOGIN_ENDPOINT}";
+        try
+        {
+            var response = await _client.SendAsJson(HttpMethod.Post, new 
+                { 
+                    name = credentials.Username, 
+                    password = credentials.Password 
+                },
+                uri);
+
+            if (response.StatusCode != HttpStatusCode.OK) return ((int) response.StatusCode, null);
+            var tokenDto = await response.Content.ReadAs<TokenDto>();
+            return (0, tokenDto);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error while login");
+            return (1000, null);
+        }
     }
 
     /// <summary>
