@@ -5,11 +5,11 @@ namespace Proinug.WebUI.ViewModels;
 /// <summary>
 /// Credentials view model (for login form)
 /// </summary>
-public class CredentialsVM
+public class CredentialsVm
 {
-    [Required]
+    [Required(ErrorMessage = "Username is required")]
     public string Username { get; set; } = "";
 
-    [Required]
+    [Required(ErrorMessage = "Password is required")]
     public string Password { get; set; } = "";
 }
