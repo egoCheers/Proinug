@@ -12,7 +12,7 @@ namespace Proinug.WebUI.Services;
 /// <summary>
 /// Custom authentication state provider
 /// </summary>
-public class CwAuthenticationStateProvider : AuthenticationStateProvider
+public class CwAuthenticationStateProvider : AuthenticationStateProvider, ICwAuthenticationStateProvider
 {
     private const string USER_SESSION_OBJECT_KEY = "user_session_obj";
     
@@ -100,7 +100,7 @@ public class CwAuthenticationStateProvider : AuthenticationStateProvider
         }
         NotifyAuthenticationStateChanged(Task.FromResult(GenerateEmptyAuthenticationState()));
     }
-    
+
     /// <summary>
     /// Token is valid
     /// </summary>
