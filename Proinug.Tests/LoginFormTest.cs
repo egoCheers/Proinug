@@ -1,22 +1,40 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Bunit;
-using Bunit.TestDoubles;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Proinug.WebUI.Components;
-using Proinug.WebUI.Services;
+using Proinug.WebUI.Interfaces;
+using Proinug.WebUI.Models;
 using Xunit;
 
 namespace Proinug.Tests;
 
-public class LoginFormTest
+public class LoginFormTest : IDisposable
 {
+    private readonly TestContext _ctx;
+    private readonly Mock<ICwAuthenticationStateProvider> _moqAuth;
+
+    public LoginFormTest()
+    {
+        _ctx = new TestContext();
+        _moqAuth = new Mock<ICwAuthenticationStateProvider>();
+        _ctx.Services.AddSingleton<ICwAuthenticationStateProvider>(_moqAuth.Object);
+        _ctx.Services.AddSingleton<AuthenticationStateProvider>(c =>
+            (AuthenticationStateProvider) c.GetService<ICwAuthenticationStateProvider>()!);
+    }
+
+    public void Dispose()
+    {
+        _ctx.Dispose();
+    }
+    
     [Fact]
     public void LoginForm_ContainsUsernamePasswordSubmitInputs()
     {
-        using var ctx = new TestContext();
-        
-        var component = ctx.RenderComponent<LoginForm>();
+        var component = _ctx.RenderComponent<LoginForm>();
         var inputUsername = component.Find("#input-login");
         var inputPassword = component.Find("#input-password");
         var buttonSubmit = component.Find("#button-submit");
@@ -29,9 +47,7 @@ public class LoginFormTest
     [Fact]
     public void LoginForm_UsernameAndPasswordFieldsAreRequired()
     {
-        using var ctx = new TestContext();
-        
-        var component = ctx.RenderComponent<LoginForm>();
+        var component = _ctx.RenderComponent<LoginForm>();
         var buttonSubmit = component.Find("#button-submit");
         buttonSubmit.Click();
         var invalidMessages = component.FindAll(".validation-message");
@@ -47,10 +63,16 @@ public class LoginFormTest
     [Fact]
     public void LoginForm_SubmitButtonHaveSpinnerSpanAfterClicking()
     {
-        using var ctx = new TestContext();
-        // Ok here should do some mocking
+        _moqAuth.Setup(s => s.LoginAsync(It.IsAny<Credentials>()))
+            .Returns(
+                async () =>
+                {
+                    await Task.Delay(10);
+                    return 0;
+                });
+
+        var component = _ctx.RenderComponent<LoginForm>();
         
-        var component = ctx.RenderComponent<LoginForm>();
         var buttonSubmit = component.Find("#button-submit");
         var inputUsername = component.Find("#input-login");
         var inputPassword = component.Find("#input-password");
@@ -60,5 +82,47 @@ public class LoginFormTest
         var spinner = component.Find(".spinner-border");
         
         Assert.Equal("SPAN", spinner.TagName);
+    }
+
+    [Fact]
+    public void LoginForm_ShowAlertWrongUsernameOrPasswordIfServerReturn401()
+    {
+        _moqAuth.Setup(s => s.LoginAsync(It.IsAny<Credentials>()))
+            .Returns(Task.FromResult(401));
+
+        var component = _ctx.RenderComponent<LoginForm>();
+        
+        var buttonSubmit = component.Find("#button-submit");
+        var inputUsername = component.Find("#input-login");
+        var inputPassword = component.Find("#input-password");
+        inputUsername.Change("test");
+        inputPassword.Change("test");
+        buttonSubmit.Click();
+        var errorMessageDiv = component.Find("#alert-error-message");
+        var errorCodeDiv = component.Find("#alert-error-code");
+        
+        Assert.Contains("Wrong username or password", errorMessageDiv.TextContent);
+        Assert.Contains("401", errorCodeDiv.TextContent);
+    }
+    
+    [Fact]
+    public void LoginForm_ShowAlertSomethingWentWrongIfServerError()
+    {
+        _moqAuth.Setup(s => s.LoginAsync(It.IsAny<Credentials>()))
+            .Returns(Task.FromResult(1000));
+
+        var component = _ctx.RenderComponent<LoginForm>();
+        
+        var buttonSubmit = component.Find("#button-submit");
+        var inputUsername = component.Find("#input-login");
+        var inputPassword = component.Find("#input-password");
+        inputUsername.Change("test");
+        inputPassword.Change("test");
+        buttonSubmit.Click();
+        var errorMessageDiv = component.Find("#alert-error-message");
+        var errorCodeDiv = component.Find("#alert-error-code");
+        
+        Assert.Contains("Something went wrong while login.", errorMessageDiv.TextContent);
+        Assert.Contains("1000", errorCodeDiv.TextContent);
     }
 }
