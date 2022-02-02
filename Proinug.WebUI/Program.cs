@@ -15,8 +15,7 @@ builder.Services.AddAuthService(builder.Configuration)
     .AddScoped<ProtectedLocalStorage>()
     .AddScoped<ICwAuthenticationStateProvider, CwAuthenticationStateProvider>()
     .AddScoped<AuthenticationStateProvider>(c => 
-        (AuthenticationStateProvider?) c.GetService<ICwAuthenticationStateProvider>() 
-        ?? throw new InvalidOperationException("Can't get a service for ICwAuthenticationStateProvider"))
+        (AuthenticationStateProvider?) c.GetService<ICwAuthenticationStateProvider>()!)
     .AddSingleton<ISystemClock, RealSystemClock>();
 
 var app = builder.Build();
