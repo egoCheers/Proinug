@@ -27,7 +27,7 @@ public partial class LoginForm
         if (AuthenticationStateProvider == null) return;
         
         _busy = true;
-        _errorCode = await AuthenticationStateProvider.LoginAsync(_credentials.Map(new Credentials()));
+        (_errorCode, var authState) = await AuthenticationStateProvider.LoginAsync(_credentials.Map(new Credentials()));
 
         if (_errorCode == 401)
         {
@@ -41,5 +41,7 @@ public partial class LoginForm
             _errorMessage = "Something went wrong while login.";
         }
         _busy = false;
+        
+        
     }
 }

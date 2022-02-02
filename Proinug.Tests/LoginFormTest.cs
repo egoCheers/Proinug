@@ -68,7 +68,7 @@ public class LoginFormTest : IDisposable
                 async () =>
                 {
                     await Task.Delay(10);
-                    return 0;
+                    return (0, null);
                 });
 
         var component = _ctx.RenderComponent<LoginForm>();
@@ -88,7 +88,7 @@ public class LoginFormTest : IDisposable
     public void LoginForm_ShowAlertWrongUsernameOrPasswordIfServerReturn401()
     {
         _moqAuth.Setup(s => s.LoginAsync(It.IsAny<Credentials>()))
-            .Returns(Task.FromResult(401));
+            .Returns(Task.FromResult<(int, AuthenticationState?)>((401, null)));
 
         var component = _ctx.RenderComponent<LoginForm>();
         
@@ -109,7 +109,7 @@ public class LoginFormTest : IDisposable
     public void LoginForm_ShowAlertSomethingWentWrongIfServerError()
     {
         _moqAuth.Setup(s => s.LoginAsync(It.IsAny<Credentials>()))
-            .Returns(Task.FromResult(1000));
+            .Returns(Task.FromResult<(int, AuthenticationState?)>((1000, null)));
 
         var component = _ctx.RenderComponent<LoginForm>();
         

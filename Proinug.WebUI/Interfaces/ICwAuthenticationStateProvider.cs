@@ -20,7 +20,7 @@ public interface ICwAuthenticationStateProvider
     /// </summary>
     /// <param name="credentials"></param>
     /// <returns></returns>
-    Task<int> LoginAsync(Credentials credentials);
+    Task<(int Error, AuthenticationState? state)> LoginAsync(Credentials credentials);
 
     /// <summary>
     /// Logout async

@@ -66,22 +66,23 @@ public class CwAuthenticationStateProvider : AuthenticationStateProvider, ICwAut
     /// </summary>
     /// <param name="credentials"></param>
     /// <returns></returns>
-    public async Task<int> LoginAsync(Credentials credentials)
+    public async Task<(int Error, AuthenticationState? state)> LoginAsync(Credentials credentials)
     {
         var (error, token) = await _authService.LoginAsync(credentials);
-        if (error != 0) return error;
-        if (token == null) return 1000;
+        if (error != 0) return (error, null);
+        if (token == null) return (1000, null);
         try
         {
             await _protectedLocalStorage.SetAsync(USER_SESSION_OBJECT_KEY, JsonSerializer.Serialize(token));
-            NotifyAuthenticationStateChanged(Task.FromResult(GenerateAuthenticationState(token)));
-            return 0;
+            var authState = GenerateAuthenticationState(token);
+            NotifyAuthenticationStateChanged(Task.FromResult(authState));
+            return (0, authState);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred writing data to protected browser local storage");
         }
-        return 1000;
+        return (1000, null);
     }
     
     /// <summary>
