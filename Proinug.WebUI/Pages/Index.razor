@@ -1,5 +1,12 @@
 @page "/"
-
 <PageTitle>Proinug - home page</PageTitle>
-<RedirectToLoginPage/>
-<h3>Index page</h3>
+<AuthorizeView>
+    <Authorized>
+        <h3>Index page</h3>
+        <h5>Authorized</h5>
+    </Authorized>
+    <NotAuthorized>
+        <h3>Unathorized</h3>
+        <RedirectToLoginPage/>
+    </NotAuthorized>
+</AuthorizeView>
