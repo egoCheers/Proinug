@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using HigLabo.Core;
+using Proinug.WebUI.Interfaces;
 using Proinug.WebUI.Models;
 using Proinug.WebUI.Services;
 using Proinug.WebUI.ViewModels;
@@ -10,7 +11,7 @@ namespace Proinug.WebUI.Components;
 public partial class LoginForm
 {
     [Inject]
-    public AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
+    public ICwAuthenticationStateProvider? AuthenticationStateProvider { get; set; }
     [Inject]
     public NavigationManager? NavigationManager { get; set; }
     
@@ -24,10 +25,9 @@ public partial class LoginForm
         _errorCode = 0;
         
         if (AuthenticationStateProvider == null) return;
-        var asp = (CwAuthenticationStateProvider) AuthenticationStateProvider;
-
+        
         _busy = true;
-        _errorCode = await asp.LoginAsync(_credentials.Map(new Credentials()));
+        _errorCode = await AuthenticationStateProvider.LoginAsync(_credentials.Map(new Credentials()));
 
         if (_errorCode == 401)
         {
